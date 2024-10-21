@@ -18,30 +18,40 @@ import { ipc } from 'viem/node';
 
 // Update configuration options
 const config = {
-  rpcUrl: process.env.ETH_RPC_URL || 'http://localhost:8545',
-  wsUrl: process.env.ETH_WS_URL || 'ws://localhost:8546',
+  rpcUrl: process.env.ETH_RPC_URL || 'http://127.0.0.1:8545', // Use IPv4 address
+  wsUrl: process.env.ETH_WS_URL || 'ws://127.0.0.1:8546',
   ipcPath: process.env.ETH_IPC_PATH || null,
 };
 
 // Function to create the appropriate transport based on the configuration
 const createTransport = () => {
+  const transportOptions = {
+    timeout: 30000, // 30 seconds
+    retryCount: 3,
+    retryDelay: 1000, // 1 second
+  };
+
   if (config.ipcPath) {
-    return ipc(config.ipcPath);
+    return ipc(config.ipcPath, transportOptions);
   } else if (config.rpcUrl.startsWith('http')) {
-    return http(config.rpcUrl);
+    return http(config.rpcUrl, transportOptions);
   } else {
-    return webSocket(config.wsUrl);
+    return webSocket(config.wsUrl, transportOptions);
   }
 };
 
 // Create viem public client with configurable transport
 const publicClient = createPublicClient({
-  transport: createTransport()
+  transport: createTransport(),
+  batch: {
+    multicall: true,
+  },
+  pollingInterval: 4000,
 });
 
 // Create a wallet client with configurable transport
 const walletClient = createWalletClient({
-  transport: createTransport()
+  transport: createTransport(),
 });
 
 // TODO: Implement proper account management
@@ -314,15 +324,23 @@ async function startRepl() {
     }
   };
 
+  try {
+    console.log(chalk.yellow('Connecting to Ethereum node...'));
+    const chainId = await publicClient.getChainId();
+    const blockNumber = await publicClient.getBlockNumber();
+    console.log(chalk.green('Successfully connected to Ethereum node'));
+    console.log(chalk.yellow(`Chain ID: ${chainId}`));
+    console.log(chalk.yellow(`Latest block: ${blockNumber}`));
+  } catch (error) {
+    console.error(chalk.red('Failed to connect to Ethereum node:'), error);
+    console.log(chalk.yellow('Please check your node configuration and try again.'));
+    process.exit(1);
+  }
+
   // Display welcome message before starting REPL
   console.log(chalk.blue('Eth JavaScript console'));
-  const chainId = await publicClient.getChainId();
-  const blockNumber = await publicClient.getBlockNumber();
   console.log(chalk.yellow(`Connected to ${config.ipcPath ? 'IPC' : (config.rpcUrl.startsWith('http') ? 'HTTP' : 'WebSocket')}`));
   console.log(chalk.yellow(`Endpoint: ${config.ipcPath || config.rpcUrl || config.wsUrl}`));
-  console.log(chalk.yellow(`Chain ID: ${chainId}`));
-  console.log(chalk.yellow(`Latest block: ${blockNumber}`));
-  console.log(chalk.yellow(`Datadir: ${process.cwd()}`));
   console.log(chalk.magenta('Available modules:'), chalk.cyan(Object.keys(context).join(', ')));
   console.log(chalk.red('\nTo exit, press ctrl-d or type .exit'));
 
