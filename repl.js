@@ -299,10 +299,7 @@ context.getBalance = context.eth.getBalance;
 context.getBlock = context.eth.getBlock;
 context.getTransaction = async (txHash) => await publicClient.getTransaction({ hash: txHash });
 
-// Export the context
-export default context;
 
-// Modify the startRepl function
 async function startRepl() {
   const repl = await import('node:repl');
   
@@ -360,7 +357,11 @@ async function startRepl() {
   });
 }
 
-// Check if this file is being run directly
-if (import.meta.url === `file://${process.argv[1]}`) {
-  startRepl();
+if (require.main === module) {
+  startRepl().catch(error => {
+    console.error('Failed to start REPL:', error);
+    process.exit(1);
+  });
 }
+
+module.exports = { startRepl };
