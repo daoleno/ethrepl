@@ -1,0 +1,27 @@
+{
+  "name": "ethrepl",
+  "version": "1.0.0",
+  "description": "Ethereum Read-Eval-Print Loop",
+  "main": "repl.js",
+  "type": "module",
+  "bin": {
+    "ethrepl": "./repl.js"
+  },
+  "scripts": {
+    "start": "node repl.js",
+    "test": "node --test",
+    "test:watch": "node --test --watch"
+  },
+  "keywords": [
+    "ethereum",
+    "eth",
+    "repl",
+    "blockchain"
+  ],
+  "author": "daoleno",
+  "license": "MIT",
+  "dependencies": {
+    "chalk": "^5.3.0",
+    "viem": "^2.21.31"
+  }
+}
