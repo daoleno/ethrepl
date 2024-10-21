@@ -108,6 +108,25 @@ To exit the REPL, you can either:
 - Press Ctrl+D
 - Type `.exit` and press Enter
 
+## Go Launcher Example
+
+We provide an example of how to create a Go program that can launch the ethrepl REPL without requiring any additional installation beyond Node.js. This can be useful for integrating ethrepl into other Go projects or for creating standalone executables.
+
+To build and use the Go launcher:
+
+1. Navigate to the `examples/go-launcher` directory.
+2. Run the build script:
+   ```bash
+   ./build.sh
+   ```
+3. This will create an `ethrepl-launcher` executable in the current directory.
+4. Run the launcher:
+   ```bash
+   ./ethrepl-launcher
+   ```
+
+For more details, see the README in the `examples/go-launcher` directory.
+
 ## License
 
 This project is licensed under the MIT License. See the [LICENSE](LICENSE) file for details.
