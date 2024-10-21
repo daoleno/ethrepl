@@ -118,20 +118,6 @@ To exit the REPL, you can either:
 - Press Ctrl+D
 - Type `.exit` and press Enter
 
-## Running Tests
-
-To run the tests:
-
-```bash
-npm test
-```
-
-To run tests in watch mode:
-
-```bash
-npm run test:watch
-```
-
 ## License
 
 This project is licensed under the MIT License. See the [LICENSE](LICENSE) file for details.
